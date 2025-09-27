@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ChatMessages.Domain.Entities
+﻿namespace ChatMessages.Domain.Entities
 {
     public class ChatMessage
     {
