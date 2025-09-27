@@ -1,11 +1,10 @@
-﻿using ChatMessages.Application.Contracts;
-using ChatMessages.Application.Services;
+﻿using ChatMessages.Application.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Chat_Messages_API.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     public class AuthController : ControllerBase
     {
         private readonly AuthService _authService;
