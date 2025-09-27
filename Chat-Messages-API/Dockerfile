@@ -9,9 +9,9 @@ COPY ["ChatMessages.Api/ChatMessages.API.csproj", "ChatMessages.Api/"]
 COPY ["ChatMessages.Domain/ChatMessages.Domain.csproj", "ChatMessages.Domain/"]
 COPY ["ChatMessages.Infrastructure/ChatMessages.Infrastructure.csproj", "ChatMessages.Infrastructure/"]
 COPY ["ChatMessages.Application/ChatMessages.Application.csproj", "ChatMessages.Application/"]
-RUN dotnet restore "ChatMessages.API/ChatMessages.API.csproj"
+RUN dotnet restore "ChatMessages.Api/ChatMessages.API.csproj"
 COPY . .
-WORKDIR "/src/ChatMessages.API"
+WORKDIR "/src/ChatMessages.Api"
 RUN dotnet build "ChatMessages.API.csproj" -c Release -o /app/build
 
 FROM build AS publish
