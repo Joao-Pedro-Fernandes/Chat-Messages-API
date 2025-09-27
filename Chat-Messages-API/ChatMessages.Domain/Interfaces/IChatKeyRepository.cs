@@ -2,7 +2,7 @@
 
 namespace ChatMessages.Domain.Interfaces
 {
-    public interface IChatMessageRepository : IRepository<ChatMessage>
+    public interface IChatKeyRepository : IRepository<ChatKey>
     {
         Task<ChatMessage?> GetByIdAsync(int id);
     }
