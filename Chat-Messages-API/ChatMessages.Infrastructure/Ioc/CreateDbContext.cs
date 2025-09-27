@@ -9,7 +9,7 @@ namespace ChatMessages.Infrastructure.Context
         {
             var optionsBuilder = new DbContextOptionsBuilder<ChatMessageContext>();
             optionsBuilder.UseMySql(
-                "Server=localhost;Database=ChatDB;User=root;Password=28072002;",
+                "Server=100.81.41.26;Port=3307;Database=ChatDB;User=root;Password=JFYHT#&NUB#&#%;",
                 new MySqlServerVersion(new Version(8, 0, 33))
             );
 
