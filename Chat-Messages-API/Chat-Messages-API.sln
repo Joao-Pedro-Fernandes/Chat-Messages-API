@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.14.36414.22 d17.14
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatMessages.API", "Chat-Messages-API\ChatMessages.API.csproj", "{75EB4176-DD59-4816-B361-EB758B5FBC61}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatMessages.API", "ChatMessages.Api\ChatMessages.API.csproj", "{75EB4176-DD59-4816-B361-EB758B5FBC61}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatMessages.Application", "Application\ChatMessages.Application.csproj", "{921F60D2-BB4F-45E9-8E48-B3B6139092F6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatMessages.Application", "ChatMessages.Application\ChatMessages.Application.csproj", "{921F60D2-BB4F-45E9-8E48-B3B6139092F6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatMessages.Domain", "Domain\ChatMessages.Domain.csproj", "{A48D9673-F257-453C-B1AD-0F0A49AFA853}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatMessages.Domain", "ChatMessages.Domain\ChatMessages.Domain.csproj", "{A48D9673-F257-453C-B1AD-0F0A49AFA853}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatMessages.Infrastructure", "ChatMessages.Infrastructure\ChatMessages.Infrastructure.csproj", "{3529CE23-9D68-47D8-82C2-733956EEB153}"
 EndProject

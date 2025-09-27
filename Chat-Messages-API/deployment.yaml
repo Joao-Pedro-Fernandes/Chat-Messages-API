@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-api-chat-messages
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app-api-chat-messages
+  template:
+    metadata:
+      labels:
+        app: app-api-chat-messages
+    spec:
+      containers:
+        - name: app-api-chat-messages
+          image: app-api-chat-messages-image:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+          env:
+            - name: ASPNETCORE_HTTP_PORTS
+              value: "80"
