@@ -14,15 +14,12 @@ namespace Chat_Messages_API.Controllers
             _authService = authService;
         }
 
-        [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] PostLoginRequest request)
+        [HttpGet("get")]
+        public async Task<IActionResult> GetUsersAsync()
         {
-            _authService.
-        }
 
-        public IActionResult Index()
-        {
-            return View();
+            var user = await _authService.GetUsersAsync();
+            return Ok(user);
         }
     }
 }

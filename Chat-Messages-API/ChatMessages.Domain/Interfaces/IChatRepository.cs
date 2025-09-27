@@ -7,12 +7,9 @@ using System.Threading.Tasks;
 
 namespace ChatMessages.Domain.Interfaces
 {
-    public interface IChatRepository
+    public interface IChatRepository : IRepository<Chat>
     {
         Task<Chat?> GetByIdAsync(int id);
-        Task<IEnumerable<Chat>> GetAllAsync();
-        Task AddAsync(Chat chat);
-        Task UpdateAsync(Chat chat);
-        Task DeleteAsync(int id);
+
     }
 }

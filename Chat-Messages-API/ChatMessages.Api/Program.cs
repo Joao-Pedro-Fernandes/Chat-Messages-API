@@ -1,4 +1,7 @@
+using ChatMessages.Application.Services;
+using ChatMessages.Domain.Interfaces;
 using ChatMessages.Infrastructure.Context;
+using ChatMessages.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,7 +13,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var app = builder.Build();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<AuthService>();
 
 builder.Services.AddDbContext<ChatMessageContext>(options =>
     options.UseMySql(
@@ -18,6 +22,8 @@ builder.Services.AddDbContext<ChatMessageContext>(options =>
         new MySqlServerVersion(new Version(8, 0, 33))
     )
 );
+
+var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
