@@ -5,7 +5,7 @@ WORKDIR /app
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-COPY ["ChatMessages.API/ChatMessages.API.csproj", "ChatMessages.API/"]
+COPY ["ChatMessages.Api/ChatMessages.API.csproj", "ChatMessages.Api/"]
 COPY ["ChatMessages.Domain/ChatMessages.Domain.csproj", "ChatMessages.Domain/"]
 COPY ["ChatMessages.Infrastructure/ChatMessages.Infrastructure.csproj", "ChatMessages.Infrastructure/"]
 COPY ["ChatMessages.Application/ChatMessages.Application.csproj", "ChatMessages.Application/"]
