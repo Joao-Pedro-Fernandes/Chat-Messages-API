@@ -1,5 +1,4 @@
-﻿using ChatMessages.Infrastructure.Context;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
 namespace ChatMessages.Infrastructure.Context
