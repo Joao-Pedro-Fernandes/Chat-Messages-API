@@ -17,8 +17,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Application\ChatMessages.Application.csproj" />
-    <ProjectReference Include="..\Domain\ChatMessages.Domain.csproj" />
+    <ProjectReference Include="..\ChatMessages.Application\ChatMessages.Application.csproj" />
+    <ProjectReference Include="..\ChatMessages.Domain\ChatMessages.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>
