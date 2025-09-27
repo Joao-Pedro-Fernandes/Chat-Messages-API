@@ -9,8 +9,8 @@ namespace ChatMessages.Domain.Interfaces
 {
     public interface IChatKeyHistoryRepository
     {
-        Task<ChatKeyHistory?> GetByIdAsync(int id);
-        Task<IEnumerable<ChatKeyHistory>> GetByChatIdAsync(int chatId);
-        Task AddAsync(ChatKeyHistory history);
+        Task<ChatKey?> GetByIdAsync(int id);
+        Task<IEnumerable<ChatKey>> GetByChatIdAsync(int chatId);
+        Task AddAsync(ChatKey history);
     }
 }

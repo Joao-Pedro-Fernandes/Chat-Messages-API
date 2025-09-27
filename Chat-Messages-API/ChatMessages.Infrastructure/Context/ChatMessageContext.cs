@@ -17,7 +17,7 @@ namespace ChatMessages.Infrastructure.Context
 
         public DbSet<User> Users { get; set; }
         public DbSet<ChatMessage> ChatMessages { get; set; }
-        public DbSet<ChatKeyHistory> ChatKeyHistories { get; set; }
+        public DbSet<ChatKey> ChatKeys { get; set; }
         public DbSet<Chat> Chats { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -51,22 +51,22 @@ namespace ChatMessages.Infrastructure.Context
                       .HasForeignKey(cm => cm.UserId);
 
                 entity.HasOne<Chat>()
-                      .WithMany(cm => cm.Messages)
+                      .WithMany()
                       .HasForeignKey(cm => cm.ChatId);
             });
 
 
-            modelBuilder.Entity<ChatKeyHistory>(entity =>
+            modelBuilder.Entity<ChatKey>(entity =>
             {
                 entity.HasKey(ck => ck.Id);
 
                 entity.HasOne<User>()
                       .WithMany()
-                      .HasForeignKey(ck => ck.SenderUserId);
+                      .HasForeignKey(ck => ck.UserId);
 
-                entity.HasOne<User>()
+                entity.HasOne<Chat>()
                       .WithMany()
-                      .HasForeignKey(ck => ck.ReceiverUserId);
+                      .HasForeignKey(ck => ck.ChatId);
             });
 
         }
