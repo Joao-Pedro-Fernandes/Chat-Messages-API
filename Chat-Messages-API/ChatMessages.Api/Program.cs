@@ -3,6 +3,7 @@ using ChatMessages.Application.Services;
 using ChatMessages.Domain.Interfaces;
 using ChatMessages.Infrastructure.Context;
 using ChatMessages.Infrastructure.Repositories;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,7 +20,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend", policy =>
     {
         policy
-            .WithOrigins("http://localhost:5173") // endereço exato do React
+            .WithOrigins("http://localhost:5173, https://allowing-killdeer-wise.ngrok-free.app") // endereço exato do React
             .AllowAnyMethod()
             .AllowAnyHeader()
             .AllowCredentials(); // 👈 necessário para enviar cookies
@@ -37,6 +38,7 @@ builder.Services.AddDbContext<ChatMessageContext>(options =>
 );
 
 builder.Services.AddSignalR();
+builder.Services.AddSingleton<IUserIdProvider, QueryUserIdProvider>();
 
 var app = builder.Build();
 
