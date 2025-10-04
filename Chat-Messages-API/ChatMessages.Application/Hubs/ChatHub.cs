@@ -25,14 +25,14 @@ public class ChatHub : Hub
 
         foreach (var chat in pendingChats)
         {
-            await Clients.User(chat.CreatorUserId.ToString())
+            await Clients.User(userId.ToString())
                 .SendAsync("NotifyReceiver", chat.CreatorUserId, chat.Id);
         }
 
         await base.OnConnectedAsync();
     }
 
-    public async Task SendMessage(string receiverUserId, string message, int chatId)
+    public async Task SendMessage(int chatId, string message)
     {
         var senderUserId = Context.GetHttpContext()?.Request.Query["userId"].ToString();
         if (string.IsNullOrEmpty(senderUserId))
@@ -57,7 +57,7 @@ public class ChatHub : Hub
     {
         Chat? chat;
 
-        if (chatId.HasValue)
+        if (chatId.HasValue && chatId > 0)
         {
             chat = await _unitOfWork.ChatRepository
                 .GetAsync(x => x.Id.Equals(chatId.Value));
@@ -77,8 +77,8 @@ public class ChatHub : Hub
             {
                 chat.Status = EChatStatus.Blocked;
                 await _unitOfWork.CommitAsync();
-                await Clients.User(userId.ToString())
-                    .SendAsync("NotificationRefused", userId, chat.Id);
+                await Clients.User(chat.CreatorUserId.ToString())
+                    .SendAsync("NotificationRefused");
                 return;
             }
 
@@ -97,8 +97,8 @@ public class ChatHub : Hub
 
                 await Groups.AddToGroupAsync(Context.ConnectionId, $"{chatId}");
 
-                await Clients.User(userId.ToString())
-                    .SendAsync("NotificationAccepted", userId, chat.Id);
+                await Clients.User(chat.CreatorUserId.ToString())
+                    .SendAsync("NotificationAccepted");
 
                 return;
             }

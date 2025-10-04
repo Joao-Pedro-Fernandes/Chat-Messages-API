@@ -3,6 +3,7 @@ using ChatMessages.Application.Services;
 using ChatMessages.Domain.Interfaces;
 using ChatMessages.Infrastructure.Context;
 using ChatMessages.Infrastructure.Repositories;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -37,6 +38,7 @@ builder.Services.AddDbContext<ChatMessageContext>(options =>
 );
 
 builder.Services.AddSignalR();
+builder.Services.AddSingleton<IUserIdProvider, QueryUserIdProvider>();
 
 var app = builder.Build();
 
