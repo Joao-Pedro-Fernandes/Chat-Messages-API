@@ -53,7 +53,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseRouting();
 
-app.MapHub<ChatHub>("/chat-messages/api/chat-hub");
+app.MapHub<ChatHub>("/chat-hub");
 
 app.UseHttpsRedirection();
 
