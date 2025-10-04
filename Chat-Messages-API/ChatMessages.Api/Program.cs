@@ -20,7 +20,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend", policy =>
     {
         policy
-            .AllowAnyOrigin()
+            .WithOrigins("http://localhost:5173, https://allowing-killdeer-wise.ngrok-free.app") // endereço exato do React
             .AllowAnyMethod()
             .AllowAnyHeader()
             .AllowCredentials(); // 👈 necessário para enviar cookies
