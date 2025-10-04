@@ -4,7 +4,6 @@ public class Chat
 {
     public int Id { get; set; }
     public int CreatorUserId { get; set; }
-    public Guid GroupConnectionId { get; set; }
     public EChatStatus Status { get; set; }
     public DateTime CreatedAt { get; set; }
     public User CreatorUser { get; set; }

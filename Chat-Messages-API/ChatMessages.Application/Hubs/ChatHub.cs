@@ -26,23 +26,22 @@ public class ChatHub : Hub
         foreach (var chat in pendingChats)
         {
             await Clients.User(chat.CreatorUserId.ToString())
-                .SendAsync("NotifyReceiver", chat.CreatorUserId, chat.GroupConnectionId);
+                .SendAsync("NotifyReceiver", chat.CreatorUserId, chat.Id);
         }
 
         await base.OnConnectedAsync();
     }
 
-    public async Task SendMessage(string receiverUserId, string message, string chatId)
+    public async Task SendMessage(string receiverUserId, string message, int chatId)
     {
         var senderUserId = Context.GetHttpContext()?.Request.Query["userId"].ToString();
-
         if (string.IsNullOrEmpty(senderUserId))
             throw new HubException("Usuário não identificado");
 
         ChatMessage chatMessage = new()
         {
             UserId = int.Parse(senderUserId),
-            ChatId = int.Parse(chatId),
+            ChatId = chatId,
             Message = message,
             CreatedAt = DateTime.Now
         };
@@ -50,18 +49,18 @@ public class ChatHub : Hub
         await _unitOfWork.ChatMessageRepository!.AddAsync(chatMessage);
         await _unitOfWork.CommitAsync();
 
-        await Clients.Group($"user-1")
+        await Clients.Group($"{chatId}")
             .SendAsync("ReceiveMessage", senderUserId, message);
     }
 
-    public async Task JoinChat(int userId, int otherUserId, Guid? groupConnectionId , bool? accepted)
+    public async Task JoinChat(int userId, int otherUserId, int? chatId, bool? accepted)
     {
         Chat? chat;
 
-        if (groupConnectionId.HasValue)
+        if (chatId.HasValue)
         {
             chat = await _unitOfWork.ChatRepository
-                .GetAsync(x => x.GroupConnectionId.Equals(groupConnectionId.Value));
+                .GetAsync(x => x.Id.Equals(chatId.Value));
             if (chat == null)
                 return;
 
@@ -69,12 +68,17 @@ public class ChatHub : Hub
                 return;
 
             if (chat.Status == EChatStatus.Active)
-                await Groups.AddToGroupAsync(Context.ConnectionId, $"user-{groupConnectionId}");
+            {
+                await Groups.AddToGroupAsync(Context.ConnectionId, $"{chatId}");
+                return;
+            }   
 
             if (accepted != null && !accepted.Value)
             {
                 chat.Status = EChatStatus.Blocked;
                 await _unitOfWork.CommitAsync();
+                await Clients.User(userId.ToString())
+                    .SendAsync("NotificationRefused", userId, chat.Id);
                 return;
             }
 
@@ -91,21 +95,23 @@ public class ChatHub : Hub
                 _unitOfWork.ChatUserRepository.Update(userInChat);
                 await _unitOfWork.CommitAsync();
 
-                await Groups.AddToGroupAsync(Context.ConnectionId, $"user-{groupConnectionId}");
+                await Groups.AddToGroupAsync(Context.ConnectionId, $"{chatId}");
+
+                await Clients.User(userId.ToString())
+                    .SendAsync("NotificationAccepted", userId, chat.Id);
+
                 return;
             }
 
             if (userInChat.Accepted)
-                await Groups.AddToGroupAsync(Context.ConnectionId, $"user-{groupConnectionId}");
+                await Groups.AddToGroupAsync(Context.ConnectionId, $"{chatId}");
             
             return;
         }
 
-        groupConnectionId = Guid.NewGuid();
         chat = new Chat
         {
             CreatorUserId = userId,
-            GroupConnectionId = groupConnectionId.Value,
             Status = EChatStatus.Pending,
             CreatedAt = DateTime.Now
         };
@@ -130,7 +136,7 @@ public class ChatHub : Hub
         await _unitOfWork.CommitAsync();
 
         await Clients.User(userId.ToString())
-            .SendAsync("NotifyReceiver", otherUserId, chat.GroupConnectionId);
+            .SendAsync("NotifyReceiver", userId, chatId);
     }
 
     public async Task RegisterPublicKey(string publicKey, string chatIdString)
