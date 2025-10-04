@@ -14,12 +14,4 @@ public class ChatRepository : Repository<Chat>, IChatRepository
     {
         throw new NotImplementedException();
     }
-
-    public Task<List<Chat>> GetPendingChatsForUserAsync(int userId)
-    {
-        var chat = GetAllAsync(x => x.ReceiverUserId.Equals(userId) && 
-                                 x.Status.Equals(EChatStatus.Pending));
-
-        return chat;
-    }
 }

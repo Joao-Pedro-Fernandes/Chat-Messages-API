@@ -14,12 +14,12 @@ public class Repository<T> : IRepository<T> where T : class
         _context = context;
     }
 
-    public Task<List<T>> GetAllAsync(Expression<Func<T, bool>>? predicate = null)
+    public async Task<List<T>> GetAllAsync(Expression<Func<T, bool>>? predicate = null)
     {
         if (predicate != null)
-            return _context.Set<T>().AsNoTracking().Where(predicate).ToListAsync();
+            return await _context.Set<T>().AsNoTracking().Where(predicate).ToListAsync();
 
-        return _context.Set<T>().AsNoTracking().ToListAsync();
+        return await _context.Set<T>().AsNoTracking().ToListAsync();
     }
 
     public async Task<T?> GetAsync(Expression<Func<T, bool>> predicate)

@@ -14,6 +14,7 @@ public class ChatMessageContext : DbContext
     public DbSet<ChatMessage> ChatMessages { get; set; }
     public DbSet<ChatKey> ChatKeys { get; set; }
     public DbSet<Chat> Chats { get; set; }
+    public DbSet<ChatUser> ChatUsers { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -28,13 +29,9 @@ public class ChatMessageContext : DbContext
         {
             entity.HasKey(c => c.Id);
 
-            entity.HasOne(c => c.SenderUser)
+            entity.HasOne(c => c.CreatorUser)
                   .WithMany()
-                  .HasForeignKey(c => c.SenderUserId);
-
-            entity.HasOne(c => c.ReceiverUser)
-                  .WithMany()
-                  .HasForeignKey(c => c.ReceiverUserId);
+                  .HasForeignKey(c => c.CreatorUserId);
 
             entity.Property(c => c.Status)
                 .HasConversion<string>();

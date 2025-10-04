@@ -1,7 +1,7 @@
-﻿using System.Threading.Tasks;
-namespace ChatMessages.Domain.Interfaces; 
+﻿namespace ChatMessages.Domain.Interfaces; 
 public interface IUnitOfWork
 {
+    IChatUserRepository ChatUserRepository { get; }
     IUserRepository UserRepository { get; }
     IChatRepository ChatRepository { get; }
     IChatMessageRepository ChatMessageRepository { get; }

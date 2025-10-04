@@ -16,31 +16,19 @@ public class ChatHub : Hub
 
     public override async Task OnConnectedAsync()
     {
-        var userIdStr = Context.GetHttpContext()?.Request.Query["userId"].ToString();
-        if (!int.TryParse(userIdStr, out var userId))
-        {
-            await base.OnConnectedAsync();
-            return;
-        }
+        var userIdString = Context.GetHttpContext()?.Request.Query["userId"].ToString();
+        int.TryParse(userIdString, out var userId);
 
-        await Groups.AddToGroupAsync(Context.ConnectionId, $"user-1");
+        var pendingChatIds = await _unitOfWork.ChatUserRepository.GetPendingChatsForUserAsync(userId);
 
-        var pendingChats = await _unitOfWork.ChatRepository!
-            .GetPendingChatsForUserAsync(userId);
+        var pendingChats = await _unitOfWork.ChatRepository.GetAllAsync(x => pendingChatIds.Contains(x.Id) && x.Status == EChatStatus.Pending);
 
         foreach (var chat in pendingChats)
         {
-            chat.Status = EChatStatus.Active;
-            _unitOfWork.ChatRepository.Update(chat);
-
-            await Clients.User(chat.SenderUserId.ToString())
-                .SendAsync("UserAvailable", chat.ReceiverUserId);
-
-            await Clients.User(chat.ReceiverUserId.ToString())
-                .SendAsync("ChatStarted", chat.SenderUserId);
+            await Clients.User(chat.CreatorUserId.ToString())
+                .SendAsync("NotifyReceiver", chat.CreatorUserId, chat.GroupConnectionId);
         }
 
-        await _unitOfWork.CommitAsync();
         await base.OnConnectedAsync();
     }
 
@@ -62,34 +50,87 @@ public class ChatHub : Hub
         await _unitOfWork.ChatMessageRepository!.AddAsync(chatMessage);
         await _unitOfWork.CommitAsync();
 
-        // Enviar mensagem direto para o "usuário"
         await Clients.Group($"user-1")
             .SendAsync("ReceiveMessage", senderUserId, message);
     }
 
-    public async Task RequestChat(int targetUserId)
+    public async Task JoinChat(int userId, int otherUserId, Guid? groupConnectionId , bool? accepted)
     {
-        var requesterId = GetCurrentUserId();
-        if (requesterId == null) return;
+        Chat? chat;
 
-        var chat = new Chat
+        if (groupConnectionId.HasValue)
         {
-            SenderUserId = requesterId.Value,
-            ReceiverUserId = targetUserId,
+            chat = await _unitOfWork.ChatRepository
+                .GetAsync(x => x.GroupConnectionId.Equals(groupConnectionId.Value));
+            if (chat == null)
+                return;
+
+            if (chat.Status == EChatStatus.Blocked)
+                return;
+
+            if (chat.Status == EChatStatus.Active)
+                await Groups.AddToGroupAsync(Context.ConnectionId, $"user-{groupConnectionId}");
+
+            if (accepted != null && !accepted.Value)
+            {
+                chat.Status = EChatStatus.Blocked;
+                await _unitOfWork.CommitAsync();
+                return;
+            }
+
+            var userInChat = await _unitOfWork.ChatUserRepository
+                .GetAsync(x => x.ChatId.Equals(chat.Id) && x.UserId.Equals(userId));
+            if (userInChat == null)
+                return;
+
+            if (!userInChat.Accepted)
+            {
+                userInChat.Accepted = true;
+                chat.Status = EChatStatus.Active;
+                _unitOfWork.ChatRepository.Update(chat);
+                _unitOfWork.ChatUserRepository.Update(userInChat);
+                await _unitOfWork.CommitAsync();
+
+                await Groups.AddToGroupAsync(Context.ConnectionId, $"user-{groupConnectionId}");
+                return;
+            }
+
+            if (userInChat.Accepted)
+                await Groups.AddToGroupAsync(Context.ConnectionId, $"user-{groupConnectionId}");
+            
+            return;
+        }
+
+        groupConnectionId = Guid.NewGuid();
+        chat = new Chat
+        {
+            CreatorUserId = userId,
+            GroupConnectionId = groupConnectionId.Value,
             Status = EChatStatus.Pending,
             CreatedAt = DateTime.Now
         };
-
         await _unitOfWork.ChatRepository.AddAsync(chat);
         await _unitOfWork.CommitAsync();
 
-        await Clients.User(requesterId.Value.ToString())
-            .SendAsync("WaitingForUser", targetUserId);
-    }
-    private int? GetCurrentUserId()
-    {
-        var userIdStr = Context.GetHttpContext()?.Request.Query["userId"].ToString();
-        return int.TryParse(userIdStr, out var userId) ? userId : null;
+        await _unitOfWork.ChatUserRepository.AddAsync(new ChatUser
+        {
+            ChatId = chat.Id,
+            UserId = userId,
+            Accepted = true,
+            CreatedAt = DateTime.Now,
+        });
+
+        await _unitOfWork.ChatUserRepository.AddAsync(new ChatUser
+        {
+            ChatId = chat.Id,
+            UserId = otherUserId,
+            Accepted = false,
+            CreatedAt = DateTime.Now,
+        });
+        await _unitOfWork.CommitAsync();
+
+        await Clients.User(userId.ToString())
+            .SendAsync("NotifyReceiver", otherUserId, chat.GroupConnectionId);
     }
 
     public async Task RegisterPublicKey(string publicKey, string chatIdString)
