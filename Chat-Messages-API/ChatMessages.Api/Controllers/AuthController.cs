@@ -14,10 +14,10 @@ public class AuthController : ControllerBase
         _authService = authService;
     }
 
-    [HttpGet("get")]
-    public async Task<IActionResult> GetUsersAsync()
+    [HttpGet("/[controller]/chat-users")]
+    public async Task<IActionResult> GetChatUsersAsync([FromQuery]int id)
     {
-        var user = await _authService.GetUsersAsync();
+        var user = await _authService.GetChatUsersAsync(id);
         return Ok(user);
     }
 
