@@ -9,9 +9,9 @@ namespace ChatMessages.Application.Hubs;
 public class ChatHub : Hub
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly ILogger _logger;
+    private readonly ILogger<ChatHub> _logger;
 
-    public ChatHub(IUnitOfWork unitOfWork, ILogger logger)
+    public ChatHub(IUnitOfWork unitOfWork, ILogger<ChatHub> logger)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
