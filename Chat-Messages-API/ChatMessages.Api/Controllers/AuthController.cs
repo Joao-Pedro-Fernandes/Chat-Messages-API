@@ -1,4 +1,5 @@
-﻿using ChatMessages.Application.Services;
+﻿using ChatMessages.Application.Contracts;
+using ChatMessages.Application.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Chat_Messages_API.Controllers;
@@ -16,8 +17,21 @@ public class AuthController : ControllerBase
     [HttpGet("get")]
     public async Task<IActionResult> GetUsersAsync()
     {
-
         var user = await _authService.GetUsersAsync();
+        return Ok(user);
+    }
+
+    [HttpPost("/[controller]/register")]
+    public async Task<IActionResult> RegisterAsync([FromBody] PostRegisterRequest request)
+    {
+        var user = await _authService.RegisterAsync(request);
+        return Ok(user);
+    }
+
+    [HttpPost("/[controller]/login")]
+    public async Task<IActionResult> LoginAsync([FromBody] PostRegisterRequest request)
+    {
+        var user = await _authService.LoginAsync(request);
         return Ok(user);
     }
 }

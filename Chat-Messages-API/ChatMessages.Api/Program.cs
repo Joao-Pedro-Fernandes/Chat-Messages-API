@@ -1,4 +1,4 @@
-using ChatMessages.Application.Hubs;
+﻿using ChatMessages.Application.Hubs;
 using ChatMessages.Application.Services;
 using ChatMessages.Domain.Interfaces;
 using ChatMessages.Infrastructure.Context;
@@ -14,6 +14,18 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:5173") // endereço exato do React
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials(); // 👈 necessário para enviar cookies
+    });
+});
+
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<AuthService>();
 
@@ -27,6 +39,8 @@ builder.Services.AddDbContext<ChatMessageContext>(options =>
 builder.Services.AddSignalR();
 
 var app = builder.Build();
+
+app.UseCors("AllowFrontend");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
