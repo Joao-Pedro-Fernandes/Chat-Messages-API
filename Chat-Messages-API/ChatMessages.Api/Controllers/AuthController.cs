@@ -1,24 +1,23 @@
 ﻿using ChatMessages.Application.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Chat_Messages_API.Controllers
+namespace Chat_Messages_API.Controllers;
+
+[ApiController]
+[Route("[controller]")]
+public class AuthController : ControllerBase
 {
-    [ApiController]
-    [Route("[controller]")]
-    public class AuthController : ControllerBase
+    private readonly AuthService _authService;
+    public AuthController(AuthService authService)
     {
-        private readonly AuthService _authService;
-        public AuthController(AuthService authService)
-        {
-            _authService = authService;
-        }
+        _authService = authService;
+    }
 
-        [HttpGet("get")]
-        public async Task<IActionResult> GetUsersAsync()
-        {
+    [HttpGet("get")]
+    public async Task<IActionResult> GetUsersAsync()
+    {
 
-            var user = await _authService.GetUsersAsync();
-            return Ok(user);
-        }
+        var user = await _authService.GetUsersAsync();
+        return Ok(user);
     }
 }

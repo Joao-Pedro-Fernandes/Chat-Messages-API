@@ -8,16 +8,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ChatMessages.Infrastructure.Repositories
-{
-    public class ChatKeyRepository : Repository<ChatKey>, IChatKeyRepository
-    {
-        public ChatKeyRepository(ChatMessageContext context): base(context)
-        {}
+namespace ChatMessages.Infrastructure.Repositories;
 
-        public Task<ChatMessage?> GetByIdAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
+public class ChatKeyRepository : Repository<ChatKey>, IChatKeyRepository
+{
+    public ChatKeyRepository(ChatMessageContext context): base(context)
+    {}
+
+    public Task<ChatMessage?> GetByIdAsync(int id)
+    {
+        throw new NotImplementedException();
     }
 }

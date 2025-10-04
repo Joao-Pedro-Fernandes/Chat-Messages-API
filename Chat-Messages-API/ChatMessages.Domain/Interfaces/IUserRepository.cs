@@ -1,9 +1,8 @@
 ﻿using ChatMessages.Domain.Entities;
 
-namespace ChatMessages.Domain.Interfaces
+namespace ChatMessages.Domain.Interfaces;
+
+public interface IUserRepository: IRepository<User>
 {
-    public interface IUserRepository: IRepository<User>
-    {
-        Task<User?> GetByIdAsync(int id);
-    }
+    Task<User?> GetByIdAsync(int id);
 }

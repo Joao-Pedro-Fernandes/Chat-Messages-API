@@ -1,3 +1,4 @@
+using ChatMessages.Application.Hubs;
 using ChatMessages.Application.Services;
 using ChatMessages.Domain.Interfaces;
 using ChatMessages.Infrastructure.Context;
@@ -23,6 +24,8 @@ builder.Services.AddDbContext<ChatMessageContext>(options =>
     )
 );
 
+builder.Services.AddSignalR();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -31,6 +34,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseRouting();
+
+app.MapHub<ChatHub>("/chat-hub");
 
 app.UseHttpsRedirection();
 

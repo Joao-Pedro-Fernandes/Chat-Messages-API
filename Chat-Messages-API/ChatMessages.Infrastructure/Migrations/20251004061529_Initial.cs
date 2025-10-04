@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -6,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ChatMessages.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -41,9 +42,9 @@ namespace ChatMessages.Infrastructure.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     SenderUserId = table.Column<int>(type: "int", nullable: false),
                     ReceiverUserId = table.Column<int>(type: "int", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    SenderUserId1 = table.Column<int>(type: "int", nullable: false),
-                    ReceiverUserId1 = table.Column<int>(type: "int", nullable: false)
+                    Status = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -55,20 +56,8 @@ namespace ChatMessages.Infrastructure.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Chats_Users_ReceiverUserId1",
-                        column: x => x.ReceiverUserId1,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
                         name: "FK_Chats_Users_SenderUserId",
                         column: x => x.SenderUserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Chats_Users_SenderUserId1",
-                        column: x => x.SenderUserId1,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -87,9 +76,7 @@ namespace ChatMessages.Infrastructure.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     ExpiresAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     Active = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    ChatId1 = table.Column<int>(type: "int", nullable: false),
-                    UserId1 = table.Column<int>(type: "int", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -101,20 +88,8 @@ namespace ChatMessages.Infrastructure.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ChatKeys_Chats_ChatId1",
-                        column: x => x.ChatId1,
-                        principalTable: "Chats",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
                         name: "FK_ChatKeys_Users_UserId",
                         column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ChatKeys_Users_UserId1",
-                        column: x => x.UserId1,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -131,9 +106,7 @@ namespace ChatMessages.Infrastructure.Migrations
                     ChatId = table.Column<int>(type: "int", nullable: false),
                     Message = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    ChatId1 = table.Column<int>(type: "int", nullable: false),
-                    UserId1 = table.Column<int>(type: "int", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -145,20 +118,8 @@ namespace ChatMessages.Infrastructure.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ChatMessages_Chats_ChatId1",
-                        column: x => x.ChatId1,
-                        principalTable: "Chats",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
                         name: "FK_ChatMessages_Users_UserId",
                         column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ChatMessages_Users_UserId1",
-                        column: x => x.UserId1,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -171,19 +132,9 @@ namespace ChatMessages.Infrastructure.Migrations
                 column: "ChatId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ChatKeys_ChatId1",
-                table: "ChatKeys",
-                column: "ChatId1");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_ChatKeys_UserId",
                 table: "ChatKeys",
                 column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ChatKeys_UserId1",
-                table: "ChatKeys",
-                column: "UserId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ChatMessages_ChatId",
@@ -191,19 +142,9 @@ namespace ChatMessages.Infrastructure.Migrations
                 column: "ChatId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ChatMessages_ChatId1",
-                table: "ChatMessages",
-                column: "ChatId1");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_ChatMessages_UserId",
                 table: "ChatMessages",
                 column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ChatMessages_UserId1",
-                table: "ChatMessages",
-                column: "UserId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Chats_ReceiverUserId",
@@ -211,19 +152,9 @@ namespace ChatMessages.Infrastructure.Migrations
                 column: "ReceiverUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Chats_ReceiverUserId1",
-                table: "Chats",
-                column: "ReceiverUserId1");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Chats_SenderUserId",
                 table: "Chats",
                 column: "SenderUserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Chats_SenderUserId1",
-                table: "Chats",
-                column: "SenderUserId1");
         }
 
         /// <inheritdoc />

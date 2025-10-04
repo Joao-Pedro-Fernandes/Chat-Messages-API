@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ChatMessages.Infrastructure.Migrations
 {
     [DbContext(typeof(ChatMessageContext))]
-    [Migration("20250927154658_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20251004061529_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -39,24 +39,18 @@ namespace ChatMessages.Infrastructure.Migrations
                     b.Property<int>("ReceiverUserId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ReceiverUserId1")
-                        .HasColumnType("int");
-
                     b.Property<int>("SenderUserId")
                         .HasColumnType("int");
 
-                    b.Property<int>("SenderUserId1")
-                        .HasColumnType("int");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ReceiverUserId");
 
-                    b.HasIndex("ReceiverUserId1");
-
                     b.HasIndex("SenderUserId");
-
-                    b.HasIndex("SenderUserId1");
 
                     b.ToTable("Chats");
                 });
@@ -75,9 +69,6 @@ namespace ChatMessages.Infrastructure.Migrations
                     b.Property<int>("ChatId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ChatId1")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
@@ -91,18 +82,11 @@ namespace ChatMessages.Infrastructure.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
-                    b.Property<int>("UserId1")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ChatId");
 
-                    b.HasIndex("ChatId1");
-
                     b.HasIndex("UserId");
-
-                    b.HasIndex("UserId1");
 
                     b.ToTable("ChatKeys");
                 });
@@ -118,9 +102,6 @@ namespace ChatMessages.Infrastructure.Migrations
                     b.Property<int>("ChatId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ChatId1")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
@@ -131,18 +112,11 @@ namespace ChatMessages.Infrastructure.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
-                    b.Property<int>("UserId1")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ChatId");
 
-                    b.HasIndex("ChatId1");
-
                     b.HasIndex("UserId");
-
-                    b.HasIndex("UserId1");
 
                     b.ToTable("ChatMessages");
                 });
@@ -176,27 +150,15 @@ namespace ChatMessages.Infrastructure.Migrations
 
             modelBuilder.Entity("ChatMessages.Domain.Entities.Chat", b =>
                 {
-                    b.HasOne("ChatMessages.Domain.Entities.User", null)
+                    b.HasOne("ChatMessages.Domain.Entities.User", "ReceiverUser")
                         .WithMany()
                         .HasForeignKey("ReceiverUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ChatMessages.Domain.Entities.User", "ReceiverUser")
-                        .WithMany()
-                        .HasForeignKey("ReceiverUserId1")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ChatMessages.Domain.Entities.User", null)
-                        .WithMany()
-                        .HasForeignKey("SenderUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("ChatMessages.Domain.Entities.User", "SenderUser")
                         .WithMany()
-                        .HasForeignKey("SenderUserId1")
+                        .HasForeignKey("SenderUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -207,27 +169,15 @@ namespace ChatMessages.Infrastructure.Migrations
 
             modelBuilder.Entity("ChatMessages.Domain.Entities.ChatKey", b =>
                 {
-                    b.HasOne("ChatMessages.Domain.Entities.Chat", null)
+                    b.HasOne("ChatMessages.Domain.Entities.Chat", "Chat")
                         .WithMany()
                         .HasForeignKey("ChatId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ChatMessages.Domain.Entities.Chat", "Chat")
-                        .WithMany()
-                        .HasForeignKey("ChatId1")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ChatMessages.Domain.Entities.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("ChatMessages.Domain.Entities.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId1")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -238,33 +188,31 @@ namespace ChatMessages.Infrastructure.Migrations
 
             modelBuilder.Entity("ChatMessages.Domain.Entities.ChatMessage", b =>
                 {
-                    b.HasOne("ChatMessages.Domain.Entities.Chat", null)
-                        .WithMany()
+                    b.HasOne("ChatMessages.Domain.Entities.Chat", "Chat")
+                        .WithMany("Messages")
                         .HasForeignKey("ChatId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ChatMessages.Domain.Entities.Chat", "Chat")
-                        .WithMany()
-                        .HasForeignKey("ChatId1")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ChatMessages.Domain.Entities.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("ChatMessages.Domain.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId1")
+                        .WithMany("Messages")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Chat");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ChatMessages.Domain.Entities.Chat", b =>
+                {
+                    b.Navigation("Messages");
+                });
+
+            modelBuilder.Entity("ChatMessages.Domain.Entities.User", b =>
+                {
+                    b.Navigation("Messages");
                 });
 #pragma warning restore 612, 618
         }
