@@ -46,4 +46,35 @@ public class AuthService
 
         return user;
     }
+
+    public async Task<List<GetChatUsersResponse>?> GetChatUsersAsync(int id)
+    {
+        var users = await _unitOfWork.UserRepository.GetAllAsync(u => u.Id != id);
+        var chatUsers = await _unitOfWork.ChatUserRepository.GetAllAsync(c => c.UserId != id);
+        var chatIds = chatUsers.Select(u => u.ChatId).ToList();
+        var chats = await _unitOfWork.ChatRepository.GetAllAsync(c => chatIds.Contains(c.Id));
+
+        List<GetChatUsersResponse> chatsResponse = new List<GetChatUsersResponse>();
+
+        foreach (var user in users)
+        {
+            var chatUser = chatUsers.FirstOrDefault(cu => cu.UserId == user.Id);
+            var chat = chats.FirstOrDefault(c => c.Id == chatUser?.ChatId);
+
+
+            GetChatUsersResponse addChat = new()
+            {
+                OtherUserId = user.Id,
+                OtherUserName = user.Name,
+                ChatId = chat?.Id ?? 0,
+                Accepted = chatUser?.Accepted ?? false,
+                StatusChat = chat?.Status.ToString() ?? null
+            };
+
+            chatsResponse.Add(addChat);
+          
+        }   
+
+        return chatsResponse;   
+    }
 }

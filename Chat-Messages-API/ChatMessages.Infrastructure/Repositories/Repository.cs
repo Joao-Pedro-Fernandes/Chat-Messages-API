@@ -14,6 +14,14 @@ public class Repository<T> : IRepository<T> where T : class
         _context = context;
     }
 
+    public async Task<List<TResult>> FromSqlAsync<TResult>(string sql, params object[] parameters)
+    where TResult : class
+    {
+        return await _context.Database
+            .SqlQueryRaw<TResult>(sql, parameters)
+            .ToListAsync();
+    }
+
     public async Task<List<T>> GetAllAsync(Expression<Func<T, bool>>? predicate = null)
     {
         if (predicate != null)
