@@ -20,7 +20,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend", policy =>
     {
         policy
-            .WithOrigins("http://localhost:5173") // endereço exato do React
+            .WithOrigins("*") // endereço exato do React
             .AllowAnyMethod()
             .AllowAnyHeader()
             .AllowCredentials(); // 👈 necessário para enviar cookies

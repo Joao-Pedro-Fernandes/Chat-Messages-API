@@ -2,20 +2,24 @@
 using ChatMessages.Domain.Entities;
 using ChatMessages.Domain.Interfaces;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Logging;
 
 namespace ChatMessages.Application.Hubs;
 
 public class ChatHub : Hub
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ILogger _logger;
 
-    public ChatHub(IUnitOfWork unitOfWork)
+    public ChatHub(IUnitOfWork unitOfWork, ILogger logger)
     {
         _unitOfWork = unitOfWork;
+        _logger = logger;
     }
 
     public override async Task OnConnectedAsync()
     {
+        _logger.LogInformation("## Solicitação de conexão recebida, ConnectionId: " + Context.ConnectionId);
         var userIdString = Context.GetHttpContext()?.Request.Query["userId"].ToString();
         int.TryParse(userIdString, out var userId);
 
@@ -34,6 +38,7 @@ public class ChatHub : Hub
 
     public async Task SendMessage(int chatId, string message)
     {
+        _logger.LogInformation("## SendMessage, ConnectionId: " + Context.ConnectionId);
         var senderUserId = Context.GetHttpContext()?.Request.Query["userId"].ToString();
         if (string.IsNullOrEmpty(senderUserId))
             throw new HubException("Usuário não identificado");
@@ -55,6 +60,7 @@ public class ChatHub : Hub
 
     public async Task JoinChat(int userId, int otherUserId, int? chatId, bool? accepted)
     {
+        _logger.LogInformation("## JoinChat, ConnectionId: " + Context.ConnectionId);
         Chat? chat;
 
         if (chatId.HasValue && chatId > 0)
@@ -141,6 +147,7 @@ public class ChatHub : Hub
 
     public async Task RegisterPublicKey(string publicKey, string chatIdString)
     {
+        _logger.LogInformation("## RegisterPublicKey, ConnectionId: " + Context.ConnectionId);
         var userIdString = Context.GetHttpContext()?.Request.Query["userId"].ToString();
         int.TryParse(userIdString, out int userId);
         int.TryParse(chatIdString, out int chatId);
@@ -166,6 +173,7 @@ public class ChatHub : Hub
 
     public async Task<List<UserKey>?> GetPublicKey(string chatIdString)
     {
+        _logger.LogInformation("## GetPublicKey, ConnectionId: " + Context.ConnectionId);
         int.TryParse(chatIdString, out var chatId);
 
         var chatKeys = await _unitOfWork.ChatKeyRepository.GetAllAsync(x => x.ChatId.Equals(chatId) && x.Active);
