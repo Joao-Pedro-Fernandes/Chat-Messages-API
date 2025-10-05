@@ -14,21 +14,21 @@ public class AuthController : ControllerBase
         _authService = authService;
     }
 
-    [HttpGet("/[controller]/chat-users")]
+    [HttpGet("chat-users")]
     public async Task<IActionResult> GetChatUsersAsync([FromQuery]int id)
     {
         var user = await _authService.GetChatUsersAsync(id);
         return Ok(user);
     }
 
-    [HttpPost("/[controller]/register")]
+    [HttpPost("register")]
     public async Task<IActionResult> RegisterAsync([FromBody] PostRegisterRequest request)
     {
         var user = await _authService.RegisterAsync(request);
         return Ok(user);
     }
 
-    [HttpPost("/[controller]/login")]
+    [HttpPost("login")]
     public async Task<IActionResult> LoginAsync([FromBody] PostRegisterRequest request)
     {
         var user = await _authService.LoginAsync(request);
