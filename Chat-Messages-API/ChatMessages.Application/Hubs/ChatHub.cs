@@ -170,6 +170,8 @@ public class ChatHub : Hub
     {
         _logger.LogInformation("## RegisterPublicKey, ConnectionId: " + Context.ConnectionId);
         var userIdString = Context.GetHttpContext()?.Request.Query["userId"].ToString();
+        _logger.LogInformation("## [UserId]" + userIdString);
+        _logger.LogInformation("## [ChatId]" + chatId);
         int.TryParse(userIdString, out int userId);
 
         var chatKey = await _unitOfWork.ChatKeyRepository.GetAsync(x => x.ChatId.Equals(chatId) && x.UserId.Equals(userId) && x.Active);
