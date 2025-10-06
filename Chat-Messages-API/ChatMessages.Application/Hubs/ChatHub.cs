@@ -88,7 +88,7 @@ public class ChatHub : Hub
                 return new
                 {
                     chat.Id,
-                    chat.Status
+                    Status = chat.Status.ToString()
                 };
             }
 
@@ -113,7 +113,7 @@ public class ChatHub : Hub
                 return new
                 {
                     chat.Id,
-                    chat.Status
+                    Status = chat.Status.ToString()
                 };
             }
 
@@ -123,7 +123,7 @@ public class ChatHub : Hub
             return new
             {
                 chat.Id,
-                chat.Status
+                Status = chat.Status.ToString()
             };
         }
 
@@ -159,7 +159,7 @@ public class ChatHub : Hub
         return new
         {
             chat.Id,
-            chat.Status
+            Status = chat.Status.ToString()
         };
     }
 
