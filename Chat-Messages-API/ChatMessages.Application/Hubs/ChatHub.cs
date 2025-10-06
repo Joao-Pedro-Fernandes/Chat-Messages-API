@@ -82,6 +82,7 @@ public class ChatHub : Hub
             if (accepted != null && !accepted.Value)
             {
                 chat.Status = EChatStatus.Blocked;
+                _unitOfWork.ChatRepository.Update(chat);
                 await _unitOfWork.CommitAsync();
                 await Clients.User(chat.CreatorUserId.ToString())
                     .SendAsync("NotificationRefused");
