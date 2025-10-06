@@ -49,16 +49,30 @@ public class AuthService
 
     public async Task<List<GetChatUsersResponse>?> GetChatUsersAsync(int id)
     {
+
         var users = await _unitOfWork.UserRepository.GetAllAsync(u => u.Id != id);
-        var chatUsers = await _unitOfWork.ChatUserRepository.GetAllAsync(c => c.UserId != id);
-        var chatIds = chatUsers.Select(u => u.ChatId).ToList();
+        var findChatUsers = await _unitOfWork.ChatUserRepository.GetAllAsync(cu => cu.UserId == id);
+        var chatUsers = await _unitOfWork.ChatUserRepository.GetAllAsync(cu => cu.UserId != id);
+        List<ChatUser> finalChatUsers = new();
+
+
+        foreach (var cu in chatUsers)
+        {
+            foreach (var fcu in findChatUsers)
+            {
+                if (cu.ChatId == fcu.ChatId)
+                    finalChatUsers.Add(cu);
+            }
+        }
+
+        var chatIds = finalChatUsers.Select(u => u.ChatId).ToList();
         var chats = await _unitOfWork.ChatRepository.GetAllAsync(c => chatIds.Contains(c.Id));
 
         List<GetChatUsersResponse> chatsResponse = new List<GetChatUsersResponse>();
 
         foreach (var user in users)
         {
-            var chatUser = chatUsers.FirstOrDefault(cu => cu.UserId == user.Id);
+            var chatUser = finalChatUsers.FirstOrDefault(cu => cu.UserId == user.Id);
             var chat = chats.FirstOrDefault(c => c.Id == chatUser?.ChatId);
 
 
