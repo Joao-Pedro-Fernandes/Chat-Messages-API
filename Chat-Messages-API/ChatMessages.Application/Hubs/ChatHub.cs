@@ -58,7 +58,7 @@ public class ChatHub : Hub
             .SendAsync("ReceiveMessage", senderUserId, message);
     }
 
-    public async Task JoinChat(int userId, int otherUserId, int? chatId, bool? accepted)
+    public async Task<object?> JoinChat(int userId, int otherUserId, int? chatId, bool? accepted)
     {
         _logger.LogInformation("## JoinChat, ConnectionId: " + Context.ConnectionId);
         Chat? chat;
@@ -68,15 +68,15 @@ public class ChatHub : Hub
             chat = await _unitOfWork.ChatRepository
                 .GetAsync(x => x.Id.Equals(chatId.Value));
             if (chat == null)
-                return;
+                return null;
 
             if (chat.Status == EChatStatus.Blocked)
-                return;
+                return null;
 
             if (chat.Status == EChatStatus.Active)
             {
                 await Groups.AddToGroupAsync(Context.ConnectionId, $"{chatId}");
-                return;
+                return null;
             }   
 
             if (accepted != null && !accepted.Value)
@@ -85,13 +85,17 @@ public class ChatHub : Hub
                 await _unitOfWork.CommitAsync();
                 await Clients.User(chat.CreatorUserId.ToString())
                     .SendAsync("NotificationRefused");
-                return;
+                return new
+                {
+                    chat.Id,
+                    chat.Status
+                };
             }
 
             var userInChat = await _unitOfWork.ChatUserRepository
                 .GetAsync(x => x.ChatId.Equals(chat.Id) && x.UserId.Equals(userId));
             if (userInChat == null)
-                return;
+                return null;
 
             if (!userInChat.Accepted)
             {
@@ -106,13 +110,21 @@ public class ChatHub : Hub
                 await Clients.User(chat.CreatorUserId.ToString())
                     .SendAsync("NotificationAccepted");
 
-                return;
+                return new
+                {
+                    chat.Id,
+                    chat.Status
+                };
             }
 
             if (userInChat.Accepted)
                 await Groups.AddToGroupAsync(Context.ConnectionId, $"{chatId}");
             
-            return;
+            return new
+            {
+                chat.Id,
+                chat.Status
+            };
         }
 
         chat = new Chat
@@ -143,6 +155,12 @@ public class ChatHub : Hub
 
         await Clients.User(userId.ToString())
             .SendAsync("NotifyReceiver", userId, chatId);
+
+        return new
+        {
+            chat.Id,
+            chat.Status
+        };
     }
 
     public async Task RegisterPublicKey(string publicKey, string chatIdString)
