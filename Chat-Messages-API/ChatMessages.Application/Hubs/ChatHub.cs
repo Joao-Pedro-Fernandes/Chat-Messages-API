@@ -154,7 +154,7 @@ public class ChatHub : Hub
         });
         await _unitOfWork.CommitAsync();
 
-        await Clients.User(userId.ToString())
+        await Clients.User(otherUserId.ToString())
             .SendAsync("NotifyReceiver", userId, chatId);
 
         return new
