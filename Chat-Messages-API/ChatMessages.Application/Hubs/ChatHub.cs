@@ -193,20 +193,28 @@ public class ChatHub : Hub
         await _unitOfWork.CommitAsync();
     }
 
-    public async Task<List<UserKey>?> GetPublicKey(string chatIdString)
+    public async Task<object?> GetPublicKey(int chatId)
     {
         _logger.LogInformation("## GetPublicKey, ConnectionId: " + Context.ConnectionId);
-        int.TryParse(chatIdString, out var chatId);
+        var userIdString = Context.GetHttpContext()?.Request.Query["userId"].ToString();
+        int.TryParse(userIdString, out int userId);
 
         var chatKeys = await _unitOfWork.ChatKeyRepository.GetAllAsync(x => x.ChatId.Equals(chatId) && x.Active);
         if (chatKeys == null) 
             return null;
 
-        var response = chatKeys.Select(x => new UserKey()
+        var otherChatKey = chatKeys.FirstOrDefault(x => !x.UserId.Equals(userId));
+        var userChatKey = chatKeys.FirstOrDefault(x => !x.UserId.Equals(userId));
+        if (otherChatKey == null || userChatKey == null)
+            return null;
+
+        var response = new
         {
-            PublicKey = x.PublicKey,
-            UserId = x.UserId
-        }).ToList();
+            UserId = userId,
+            UserPublicKey = userChatKey.PublicKey,
+            OtherUserId = otherChatKey.UserId,
+            OtherUserPublicKey = otherChatKey.PublicKey,
+        };
 
         return response;
     }
