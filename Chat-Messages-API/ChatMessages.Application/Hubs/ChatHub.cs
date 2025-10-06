@@ -29,6 +29,7 @@ public class ChatHub : Hub
 
         foreach (var chat in pendingChats)
         {
+            _logger.LogInformation($"## Notificando convite de chat para o usuário {userId.ToString()}");
             await Clients.User(userId.ToString())
                 .SendAsync("NotifyReceiver", chat.CreatorUserId, chat.Id);
         }
@@ -154,6 +155,7 @@ public class ChatHub : Hub
         });
         await _unitOfWork.CommitAsync();
 
+        _logger.LogInformation($"## Notificando convite de chat para o usuário {userId.ToString()}");
         await Clients.User(otherUserId.ToString())
             .SendAsync("NotifyReceiver", userId, chatId);
 
@@ -164,12 +166,11 @@ public class ChatHub : Hub
         };
     }
 
-    public async Task RegisterPublicKey(string publicKey, string chatIdString)
+    public async Task RegisterPublicKey(string publicKey, int chatId)
     {
         _logger.LogInformation("## RegisterPublicKey, ConnectionId: " + Context.ConnectionId);
         var userIdString = Context.GetHttpContext()?.Request.Query["userId"].ToString();
         int.TryParse(userIdString, out int userId);
-        int.TryParse(chatIdString, out int chatId);
 
         var chatKey = await _unitOfWork.ChatKeyRepository.GetAsync(x => x.ChatId.Equals(chatId) && x.UserId.Equals(userId) && x.Active);
         if (chatKey != null)
