@@ -43,6 +43,7 @@ public class ChatHub : Hub
         var senderUserId = Context.GetHttpContext()?.Request.Query["userId"].ToString();
         _logger.LogInformation("## [UserId]" + senderUserId);
         _logger.LogInformation("## [Message]" + message);
+        _logger.LogInformation("## [ChatId]" + chatId);
         if (string.IsNullOrEmpty(senderUserId))
             throw new HubException("Usuário não identificado");
 
