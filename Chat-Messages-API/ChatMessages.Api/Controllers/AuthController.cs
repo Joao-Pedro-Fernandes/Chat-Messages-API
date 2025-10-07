@@ -32,6 +32,11 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> LoginAsync([FromBody] PostRegisterRequest request)
     {
         var user = await _authService.LoginAsync(request);
+        if (user == null)
+        {
+            return Unauthorized("Invalid credentials");
+        }
+
         return Ok(user);
     }
 }
