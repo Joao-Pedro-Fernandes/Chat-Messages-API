@@ -74,6 +74,8 @@ public class ChatHub : Hub
             if (chat == null)
                 return null;
 
+            _logger.LogInformation("## [ChaId]" + chatId.ToString());
+
             if (chat.Status == EChatStatus.Blocked)
                 return null;
 
@@ -110,6 +112,7 @@ public class ChatHub : Hub
                 _unitOfWork.ChatUserRepository.Update(userInChat);
                 await _unitOfWork.CommitAsync();
 
+                _logger.LogInformation("## [Group] ChaId: " + chatId.ToString() + "UserId: " + userId);
                 await Groups.AddToGroupAsync(Context.ConnectionId, $"{chatId}");
 
                 await Clients.User(chat.CreatorUserId.ToString())
@@ -123,7 +126,10 @@ public class ChatHub : Hub
             }
 
             if (userInChat.Accepted)
+            {
                 await Groups.AddToGroupAsync(Context.ConnectionId, $"{chatId}");
+                _logger.LogInformation("## [Group] ChaId: " + chatId.ToString() + "UserId: " + userId);
+            }
             
             return new
             {
