@@ -74,6 +74,7 @@ public class ChatHub : Hub
             if (chat == null)
                 return null;
 
+            _logger.LogInformation("## [UserId]" + userId.ToString());
             _logger.LogInformation("## [ChaId]" + chatId.ToString());
 
             if (chat.Status == EChatStatus.Blocked)
@@ -81,6 +82,7 @@ public class ChatHub : Hub
 
             if (chat.Status == EChatStatus.Active)
             {
+                _logger.LogInformation("## [Group] ChaId: " + chatId.ToString() + "UserId: " + userId);
                 await Groups.AddToGroupAsync(Context.ConnectionId, $"{chatId}");
                 return null;
             }   
