@@ -168,10 +168,10 @@ public class ChatHub : Hub
 
         _logger.LogInformation($"## Notificando convite de chat para o usuário {userId.ToString()}");
         await Clients.User(otherUserId.ToString())
-            .SendAsync("NotifyReceiver", userId, chatId);
+            .SendAsync("NotifyReceiver", userId, chat.Id);
 
-        await Groups.AddToGroupAsync(Context.ConnectionId, $"{chatId}");
-        _logger.LogInformation("## [Group] ChaId: " + chatId.ToString() + "UserId: " + userId);
+        await Groups.AddToGroupAsync(Context.ConnectionId, $"{chat.Id}");
+        _logger.LogInformation("## [Group] ChaId: " + chat.Id.ToString() + "UserId: " + userId);
 
         return new
         {
