@@ -86,7 +86,7 @@ public class ChatHub : Hub
                 _unitOfWork.ChatRepository.Update(chat);
                 await _unitOfWork.CommitAsync();
                 await Clients.User(chat.CreatorUserId.ToString())
-                    .SendAsync("NotificationRefused");
+                    .SendAsync("NotificationRefused", chat.Id, chat.Status.ToString());
                 return new
                 {
                     chat.Id,
@@ -110,7 +110,7 @@ public class ChatHub : Hub
                 await Groups.AddToGroupAsync(Context.ConnectionId, $"{chatId}");
 
                 await Clients.User(chat.CreatorUserId.ToString())
-                    .SendAsync("NotificationAccepted");
+                    .SendAsync("NotificationAccepted", chat.Id, chat.Status.ToString());
 
                 return new
                 {
