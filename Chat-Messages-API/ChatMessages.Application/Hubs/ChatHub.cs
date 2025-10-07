@@ -37,6 +37,23 @@ public class ChatHub : Hub
         await base.OnConnectedAsync();
     }
 
+    public async Task NotifyKeyUpdate(int chatId)
+    {
+        var userIdString = Context.GetHttpContext()?.Request.Query["userId"].ToString();
+        int.TryParse(userIdString, out var userId);
+
+        var chat = await _unitOfWork.ChatRepository.GetAsync(x => x.Id.Equals(chatId));
+        if (chat == null)
+            return;
+
+        var chatOtherUsers = await _unitOfWork.ChatUserRepository.GetAsync(x => x.ChatId.Equals(chatId) && x.UserId != userId);
+        if (chatOtherUsers == null)
+            return;
+
+        await Clients.User(chatOtherUsers.UserId.ToString())
+            .SendAsync("NotificationUpdatedKeys");
+    }
+
     public async Task SendMessage(int chatId, string message)
     {
         _logger.LogInformation("## SendMessage, ConnectionId: " + Context.ConnectionId);
