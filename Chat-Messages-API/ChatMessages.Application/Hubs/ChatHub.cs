@@ -170,6 +170,9 @@ public class ChatHub : Hub
         await Clients.User(otherUserId.ToString())
             .SendAsync("NotifyReceiver", userId, chatId);
 
+        await Groups.AddToGroupAsync(Context.ConnectionId, $"{chatId}");
+        _logger.LogInformation("## [Group] ChaId: " + chatId.ToString() + "UserId: " + userId);
+
         return new
         {
             chat.Id,
